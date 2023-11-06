@@ -3,25 +3,21 @@ defmodule Hangman.GameLogic do
   Main logic for the game
   """
 
-  @doc """
-  Creates the initial game state
-  """
-  def init(word) do
-    %{word: word, misses: [], matches: [], limit: 5, mask: "_", completed?: false}
-  end
+  alias Hangman.State
 
   @doc """
   Returns the game state after the user takes a guess
   """
-  def guess(letter, state) do
-    %{word: word, matches: matches, misses: misses, limit: limit} = state
+  @spec guess(String.t(), State.t()) :: State.t()
+  def guess(letter, %State{} = state) do
+    %{goal: goal, matches: matches, misses: misses, limit: limit} = state
 
-    if String.contains?(word, letter) do
-      matches = [letter | matches]
-      completed? = word |> String.codepoints() |> Enum.all?(&(&1 in matches))
+    if MapSet.member?(goal, letter) do
+      matches = MapSet.put(matches, letter)
+      completed? = MapSet.equal?(matches, goal)
       %{state | matches: matches, completed?: completed?}
     else
-      %{state | misses: [letter | misses], limit: limit - 1}
+      %{state | misses: MapSet.put(misses, letter), limit: limit - 1}
     end
   end
 end
