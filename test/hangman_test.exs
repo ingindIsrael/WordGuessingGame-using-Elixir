@@ -1,8 +1,9 @@
 ExUnit.start(autorun: false)
 
 defmodule HangmanTest do
-  use ExUnit.Case, async: true
 
+  use ExUnit.Case, async: true
+  doctest Hangman
   describe "take_a_guess/2" do
     setup do
       {"_______", state} = Hangman.start_game()
